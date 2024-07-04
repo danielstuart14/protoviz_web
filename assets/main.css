@@ -74,7 +74,7 @@ html,body, #st-full-pg {
 }
 
 .button:hover {
-  background-color: #2c6c97;
+  background-color: #275d81;
 }
 
 .button:focus {
@@ -83,14 +83,14 @@ html,body, #st-full-pg {
 }
 
 .button:disabled {
-  background-color: #94c1d3;
+  background-color: #757575;
   border-color: rgba(27, 31, 35, .1);
   color: rgba(255, 255, 255, .8);
   cursor: default;
 }
 
-.button:active {
-  background-color: #235979;
+.button:active:enabled {
+  background-color: #1f4c66;
   box-shadow: rgba(20, 52, 70, 0.2) 0 1px 0 inset;
 }
 
@@ -104,6 +104,17 @@ html,body, #st-full-pg {
     padding: 6px;
     line-height: 0px;
 }
+
+.arrow_button {
+  border-radius: 0;
+  padding: 1px 6px;
+  line-height: 0px;
+}
+
+.arrow_column {
+  gap: 1px;
+}
+
 
 .title {
     line-height: 100%;

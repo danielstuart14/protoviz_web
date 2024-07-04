@@ -1,7 +1,7 @@
 mod utils;
 
 use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::{FaPlus, FaX}, Icon};
+use dioxus_free_icons::{icons::fa_solid_icons::{FaCaretDown, FaCaretUp, FaPlus, FaX}, Icon};
 use hex_color::{Display, HexColor};
 use protoviz::descriptor::ProtoDescriptor;
 use dioxus_logger::tracing::{Level, error};
@@ -133,16 +133,32 @@ fn app() -> Element {
                 div { class: "list",
                     for (i, field) in input_fields.read().iter().enumerate() {
                         div { class: "row list_row",
-                            button { class: "button circle_button",
-                                onclick: move |_| {
-                                    input_fields.write().remove(i);
-                                    descriptor.write().fields = create_field_descriptors(&input_fields.read());
-                                    *svg_data.write() = update_svg(&descriptor.read());
+                            div { class: "column arrow_column",
+                                button { class: "button arrow_button",
+                                    disabled: i == 0,
+                                    onclick: move |_| {
+                                        input_fields.write().swap(i, i - 1);
+                                        descriptor.write().fields = create_field_descriptors(&input_fields.read());
+                                        *svg_data.write() = update_svg(&descriptor.read());
+                                    },
+                                    Icon {
+                                        width: 10,
+                                        height: 10,
+                                        icon: FaCaretUp,
+                                    },
                                 },
-                                Icon {
-                                    width: 15,
-                                    height: 15,
-                                    icon: FaX,
+                                button { class: "button arrow_button",
+                                    disabled: i == input_fields.read().len() - 1,
+                                    onclick: move |_| {
+                                        input_fields.write().swap(i, i + 1);
+                                        descriptor.write().fields = create_field_descriptors(&input_fields.read());
+                                        *svg_data.write() = update_svg(&descriptor.read());
+                                    },
+                                    Icon {
+                                        width: 10,
+                                        height: 10,
+                                        icon: FaCaretDown,
+                                    },
                                 },
                             },
                             input { class: "text_entry", style: "flex: 2;",
@@ -186,6 +202,18 @@ fn app() -> Element {
                                     descriptor.write().fields = create_field_descriptors(&input_fields.read());
                                     *svg_data.write() = update_svg(&descriptor.read());
                                 }
+                            },
+                            button { class: "button circle_button",
+                                onclick: move |_| {
+                                    input_fields.write().remove(i);
+                                    descriptor.write().fields = create_field_descriptors(&input_fields.read());
+                                    *svg_data.write() = update_svg(&descriptor.read());
+                                },
+                                Icon {
+                                    width: 12,
+                                    height: 12,
+                                    icon: FaX,
+                                },
                             }
                         }
                     }
