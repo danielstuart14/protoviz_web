@@ -259,6 +259,18 @@ fn app() -> Element {
                             },
                             div { class: "options",
                                 div { class: "row list_row",
+                                    label { r#for: "is_network", "Network Order" },
+                                    input {
+                                        r#type: "checkbox",
+                                        name: "is_network",
+                                        checked: descriptor.read().elements.is_network,
+                                        onchange: move |evt| {
+                                            descriptor.write().elements.is_network = evt.checked();
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
+                                },
+                                div { class: "row list_row",
                                     label { r#for: "field_pos", "Field Position" },
                                     input {
                                         r#type: "checkbox",
