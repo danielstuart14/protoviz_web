@@ -177,6 +177,7 @@ html,body, #st-full-pg {
 .text_entry {
   padding: 5px;
   width: 0;
+  min-width: 50px;
   flex: 1;
 }
 
