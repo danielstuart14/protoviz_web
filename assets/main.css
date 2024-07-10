@@ -22,7 +22,7 @@ html,body, #st-full-pg {
 }
 
 .header {
-    padding: 10px;
+    padding: 0 10px;
     background-color: #3C3C3C;
     display: flex;
     align-items: center;
@@ -185,6 +185,7 @@ html,body, #st-full-pg {
     justify-content: space-between;
     background-color: #242424;
     line-height: 0;
+    padding: 10px;
 }
 
 .list {
@@ -212,18 +213,6 @@ input[type=color] {
   width: 50px;
 }
 
-input[type=file]:enabled {
-  cursor: pointer;
-}
-
 input[type=file] {
-  height: 100%;
-  position:absolute;
-  top: 0;
-  right: 0;
-  z-index: 99;
-  /*This makes the button huge. If you want a bigger button, increase the font size*/
-  font-size:50px;
-  /*Opacity settings for all browsers*/
-  opacity: 0;
+  display: none;
 }

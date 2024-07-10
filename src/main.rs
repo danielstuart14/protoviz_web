@@ -1,13 +1,15 @@
 mod utils;
 
 use dioxus::prelude::*;
-use dioxus_free_icons::{icons::fa_solid_icons::{FaCaretDown, FaCaretUp, FaPlus, FaX}, Icon};
+use dioxus_free_icons::{
+    icons::fa_solid_icons::{FaCaretDown, FaCaretUp, FaPlus, FaX},
+    Icon,
+};
+use dioxus_logger::tracing::{error, Level};
 use hex_color::{Display, HexColor};
 use protoviz::descriptor::ProtoDescriptor;
-use dioxus_logger::tracing::{Level, error};
 
 use utils::{create_field_descriptors, download_file, update_field_inputs, update_svg, FieldInput};
-
 
 fn main() {
     // Init logger
@@ -17,69 +19,79 @@ fn main() {
 
 #[component]
 fn app() -> Element {
-    let mut input_fields = use_signal(|| vec![
-        FieldInput{
-            name: "Field 1".to_string(),
-            length: "2".to_string(),
-            color: None,
-        },
-        FieldInput{
-            name: "Field 2".to_string(),
-            length: "N".to_string(),
-            color: Some(HexColor::rgb(120, 180, 240)),
-        },
-        FieldInput{
-            name: "Field 3".to_string(),
-            length: "1".to_string(),
-            color: Some(HexColor::rgb(240, 180, 120)),
-        },
-    ]);
+    let mut input_fields = use_signal(|| {
+        vec![
+            FieldInput {
+                name: "Field 1".to_string(),
+                length: "2".to_string(),
+                wrap: false,
+                color: None,
+            },
+            FieldInput {
+                name: "Field 2".to_string(),
+                length: "N".to_string(),
+                wrap: false,
+                color: Some(HexColor::rgb(120, 180, 240)),
+            },
+            FieldInput {
+                name: "Field 3".to_string(),
+                length: "1".to_string(),
+                wrap: false,
+                color: Some(HexColor::rgb(240, 180, 120)),
+            },
+        ]
+    });
 
+    let mut file_opened = use_signal(|| String::new());
     let mut descriptor = use_signal(|| ProtoDescriptor::default());
     let mut svg_data = use_signal(|| {
         descriptor.write().fields = create_field_descriptors(&input_fields.read());
         update_svg(&descriptor.read())
     });
-    
+
     rsx! {
         link { rel: "stylesheet", href: "main.css" }
         div { class: "header",
             h1 { class: "title",
-                "ProtoViz" 
+                "ProtoViz"
             },
             div { class: "header_left",
-                button { class: "button",
+                label { r#for: "file-open", class: "button",
                     "Open"
-                    input {
-                        r#type: "file",
-                        accept: ".json",
-                        multiple: false,
-                        onchange: move |evt| {
-                            async move {
-                                if let Some(files) = evt.files() {
-                                    match files.files().iter().next() {
-                                        Some(file_name) => {
-                                            if let Some(file) = files.read_file_to_string(file_name).await {
-                                                let new_descriptor: ProtoDescriptor = match serde_json::from_str(&file) {
-                                                    Ok(descriptor) => descriptor,
-                                                    Err(e) => {
-                                                        error!("Failed to parse file: {}", e);
-                                                        gloo_dialogs::alert("Failed to parse file");
-                                                        return;
-                                                    }
-                                                };
-                                                
-                                                *descriptor.write() = new_descriptor;
-                                                *input_fields.write() = update_field_inputs(&descriptor.read().fields);
-                                                *svg_data.write() = update_svg(&descriptor.read());
-                                            }
-                                        },
-                                        None => {}
-                                    }
+                },
+                input {
+                    id: "file-open",
+                    r#type: "file",
+                    accept: ".json",
+                    multiple: false,
+                    value: "{*file_opened.read()}",
+                    onchange: move |evt| {
+                        *file_opened.write() = evt.value();
+                        async move {
+                            if let Some(files) = evt.files() {
+                                match files.files().iter().next() {
+                                    Some(file_name) => {
+                                        if let Some(file) = files.read_file_to_string(file_name).await {
+                                            let new_descriptor: ProtoDescriptor = match serde_json::from_str(&file) {
+                                                Ok(descriptor) => descriptor,
+                                                Err(e) => {
+                                                    error!("Failed to parse file: {}", e);
+                                                    gloo_dialogs::alert("Failed to parse file");
+                                                    return;
+                                                }
+                                            };
+
+                                            *descriptor.write() = new_descriptor;
+                                            *input_fields.write() = update_field_inputs(&descriptor.read().fields);
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    },
+                                    None => {}
                                 }
                             }
+                            *file_opened.write() = String::new();
                         }
-                    }
+                    },
                 }
                 button { class: "button",
                     onclick: move |_| {
@@ -179,9 +191,23 @@ fn app() -> Element {
                                     *svg_data.write() = update_svg(&descriptor.read());
                                 }
                             },
+                            label { r#for: "wrap", "Wrap" },
+                            input { r#type: "checkbox",
+                                checked: field.wrap,
+                                name: "wrap",
+                                oninput: move |evt| {
+                                    if evt.checked() {
+                                        input_fields.write()[i].wrap = true;
+                                    } else {
+                                        input_fields.write()[i].wrap = false;
+                                    }
+                                    descriptor.write().fields = create_field_descriptors(&input_fields.read());
+                                    *svg_data.write() = update_svg(&descriptor.read());
+                                }
+                            },
                             label { r#for: "color", "Color" },
-                            input { r#type: "checkbox", 
-                                checked: field.color.is_some(), 
+                            input { r#type: "checkbox",
+                                checked: field.color.is_some(),
                                 name: "color",
                                 oninput: move |evt| {
                                     if evt.checked() {
@@ -217,7 +243,7 @@ fn app() -> Element {
                             }
                         }
                     }
-                }            
+                }
             }
             div { class: "column right_column",
                 div { class: "viewport",
@@ -291,9 +317,9 @@ fn app() -> Element {
                                     input {
                                         r#type: "checkbox",
                                         name: "is_network",
-                                        checked: descriptor.read().elements.is_network,
+                                        checked: descriptor.read().elements.network_order,
                                         onchange: move |evt| {
-                                            descriptor.write().elements.is_network = evt.checked();
+                                            descriptor.write().elements.network_order = evt.checked();
                                             *svg_data.write() = update_svg(&descriptor.read());
                                         }
                                     }
@@ -303,9 +329,9 @@ fn app() -> Element {
                                     input {
                                         r#type: "checkbox",
                                         name: "field_pos",
-                                        checked: descriptor.read().elements.position,
+                                        checked: descriptor.read().elements.field_position,
                                         onchange: move |evt| {
-                                            descriptor.write().elements.position = evt.checked();
+                                            descriptor.write().elements.field_position = evt.checked();
                                             *svg_data.write() = update_svg(&descriptor.read());
                                         }
                                     }
@@ -315,9 +341,33 @@ fn app() -> Element {
                                     input {
                                         r#type: "checkbox",
                                         name: "field_len",
-                                        checked: descriptor.read().elements.length,
+                                        checked: descriptor.read().elements.field_length,
                                         onchange: move |evt| {
-                                            descriptor.write().elements.length = evt.checked();
+                                            descriptor.write().elements.field_length = evt.checked();
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
+                                },
+                                div { class: "row list_row",
+                                    label { r#for: "wrap_line", "Wrap Line" },
+                                    input {
+                                        r#type: "checkbox",
+                                        name: "wrap_line",
+                                        checked: descriptor.read().elements.wrap_line,
+                                        onchange: move |evt| {
+                                            descriptor.write().elements.wrap_line = evt.checked();
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
+                                },
+                                div { class: "row list_row",
+                                    label { r#for: "start_symbol", "Start Symbol" },
+                                    input {
+                                        r#type: "checkbox",
+                                        name: "start_symbol",
+                                        checked: descriptor.read().elements.start_symbol,
+                                        onchange: move |evt| {
+                                            descriptor.write().elements.start_symbol = evt.checked();
                                             *svg_data.write() = update_svg(&descriptor.read());
                                         }
                                     }

@@ -1,12 +1,13 @@
-use hex_color::HexColor;
-use protoviz::descriptor::{FieldDescriptor, FieldLength, ProtoDescriptor};
-use js_sys::wasm_bindgen::JsCast;
 use dioxus_logger::tracing::error;
+use hex_color::HexColor;
+use js_sys::wasm_bindgen::JsCast;
+use protoviz::descriptor::{FieldDescriptor, FieldLength, ProtoDescriptor};
 
 #[derive(Debug, Default)]
 pub struct FieldInput {
     pub name: String,
     pub length: String,
+    pub wrap: bool,
     pub color: Option<HexColor>,
 }
 
@@ -17,8 +18,7 @@ pub fn download_file(data: &[u8], filename: &str, file_type: &str) -> bool {
 
     let blob = web_sys::Blob::new_with_u8_array_sequence_and_options(
         &js_array,
-        web_sys::BlobPropertyBag::new()
-            .type_(file_type),
+        web_sys::BlobPropertyBag::new().type_(file_type),
     )
     .unwrap();
 
@@ -45,7 +45,7 @@ pub fn download_file(data: &[u8], filename: &str, file_type: &str) -> bool {
                 error!("Failed to cast anchor element: {:?}", e);
                 return false;
             }
-        }
+        },
         Err(e) => {
             error!("Failed to create anchor element: {:?}", e);
             return false;
@@ -68,33 +68,39 @@ pub fn download_file(data: &[u8], filename: &str, file_type: &str) -> bool {
 }
 
 pub fn create_field_descriptors(input_fields: &[FieldInput]) -> Vec<FieldDescriptor> {
-    input_fields.iter().map(|field| {
-        FieldDescriptor {
-            name: field.name.clone(),
-            length: if !field.length.is_empty() {
+    input_fields
+        .iter()
+        .map(|field| {
+            FieldDescriptor {
+                name: field.name.clone(),
+                length: if !field.length.is_empty() {
                     match field.length.parse::<usize>() {
-                    Ok(len) => FieldLength::Fixed(len),
-                    Err(_) => FieldLength::Variable(field.length.clone()),
-                } 
+                        Ok(len) => FieldLength::Fixed(len),
+                        Err(_) => FieldLength::Variable(field.length.clone()),
+                    }
                 } else {
                     FieldLength::Fixed(1) // If no length is provided, default to 1
-            },
-            color: field.color,
-        }
-    }).collect()
+                },
+                wrap: field.wrap,
+                color: field.color,
+            }
+        })
+        .collect()
 }
 
 pub fn update_field_inputs(descriptors: &[FieldDescriptor]) -> Vec<FieldInput> {
-    descriptors.iter().map(|field| {
-        FieldInput {
+    descriptors
+        .iter()
+        .map(|field| FieldInput {
             name: field.name.clone(),
             length: match &field.length {
                 FieldLength::Fixed(len) => len.to_string(),
                 FieldLength::Variable(len) => len.clone(),
             },
+            wrap: field.wrap,
             color: field.color,
-        }
-    }).collect()
+        })
+        .collect()
 }
 
 pub fn update_svg(descriptor: &ProtoDescriptor) -> String {
