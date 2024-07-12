@@ -269,7 +269,7 @@ fn app() -> Element {
                                 h3 { "Style" },
                             },
                             div { class: "options",
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "back_color", "Background Color" },
                                     input {
                                         r#type: "color",
@@ -281,7 +281,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "field_color", "Field Color" },
                                     input {
                                         r#type: "color",
@@ -293,7 +293,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "text_color", "Text Color" },
                                     input {
                                         r#type: "color",
@@ -305,7 +305,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "sub_color", "Subtitle Color" },
                                     input {
                                         r#type: "color",
@@ -317,17 +317,37 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "unit_width", "Unit Width ({descriptor.read().style.unit_width})" },
                                     input {
                                         r#type: "range",
                                         name: "unit_width",
-                                        min: "30",
+                                        min: "20",
                                         max: "80",
                                         step: "5",
                                         value: "{descriptor.read().style.unit_width}",
                                         oninput: move |evt| {
                                             descriptor.write().style.unit_width = evt.value().parse().unwrap();
+                                        },
+                                        onchange: move |_| {
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
+                                },
+                                div { class: "row list_row list_row_slim",
+                                    label { r#for: "dyn_units", "Dynamic Units ({descriptor.read().style.dyn_units})" },
+                                    input {
+                                        r#type: "range",
+                                        name: "dyn_units",
+                                        min: "3",
+                                        max: "32",
+                                        step: "1",
+                                        value: "{descriptor.read().style.dyn_units}",
+                                        oninput: move |evt| {
+                                            descriptor.write().style.dyn_units = evt.value().parse().unwrap();
+                                            
+                                        },
+                                        onchange: move |_| {
                                             *svg_data.write() = update_svg(&descriptor.read());
                                         }
                                     }
@@ -339,7 +359,7 @@ fn app() -> Element {
                                 h3 { "Elements" },
                             },
                             div { class: "options",
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "is_network", "Network Order" },
                                     input {
                                         r#type: "checkbox",
@@ -351,7 +371,19 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
+                                    label { r#for: "inner_subs", "Inner Subtitles" },
+                                    input {
+                                        r#type: "checkbox",
+                                        name: "inner_subs",
+                                        checked: descriptor.read().elements.inner_subtitles,
+                                        onchange: move |evt| {
+                                            descriptor.write().elements.inner_subtitles = evt.checked();
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
+                                },
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "field_pos", "Field Position" },
                                     input {
                                         r#type: "checkbox",
@@ -363,7 +395,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "field_len", "Field Length" },
                                     input {
                                         r#type: "checkbox",
@@ -375,7 +407,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "wrap_line", "Wrap Line" },
                                     input {
                                         r#type: "checkbox",
@@ -387,7 +419,7 @@ fn app() -> Element {
                                         }
                                     }
                                 },
-                                div { class: "row list_row",
+                                div { class: "row list_row list_row_slim",
                                     label { r#for: "start_symbol", "Start Symbol" },
                                     input {
                                         r#type: "checkbox",
