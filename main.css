@@ -22,7 +22,8 @@ html,body, #st-full-pg {
 }
 
 .header {
-    padding: 0 10px;
+    height: 70px;
+    padding: 0 12px;
     background-color: #3C3C3C;
     display: flex;
     align-items: center;
@@ -190,6 +191,11 @@ html,body, #st-full-pg {
   gap: 10px;
 }
 
+.list_row_slim {
+  min-height: 35px;
+  height: auto;
+}
+
 .list_row > * {
   margin: auto 0;
 }
@@ -197,7 +203,7 @@ html,body, #st-full-pg {
 .text_entry {
   padding: 5px;
   width: 0;
-  min-width: 50px;
+  min-width: 40px;
   flex: 1;
 }
 
@@ -205,7 +211,8 @@ html,body, #st-full-pg {
     justify-content: space-between;
     background-color: #242424;
     line-height: 0;
-    padding: 10px;
+    padding: 6px 12px;
+    height: auto;
 }
 
 .list {
@@ -235,4 +242,8 @@ input[type=color] {
 
 input[type=file] {
   display: none;
+}
+
+input[type=range] {
+  width: 50%
 }
