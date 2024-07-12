@@ -2,7 +2,10 @@ mod utils;
 
 use dioxus::prelude::*;
 use dioxus_free_icons::{
-    icons::fa_solid_icons::{FaCaretDown, FaCaretUp, FaPlus, FaX},
+    icons::{
+        fa_brands_icons::FaGithub,
+        fa_solid_icons::{FaCaretDown, FaCaretUp, FaPlus, FaX},
+    },
     Icon,
 };
 use dioxus_logger::tracing::{error, Level};
@@ -56,7 +59,7 @@ fn app() -> Element {
                 "ProtoViz"
             },
             div { class: "header_left",
-                label { r#for: "file-open", class: "button",
+                label { r#for: "file-open", class: "button button_header",
                     "Open"
                 },
                 input {
@@ -93,7 +96,7 @@ fn app() -> Element {
                         }
                     },
                 }
-                button { class: "button",
+                button { class: "button button_header",
                     onclick: move |_| {
                         match serde_json::to_string_pretty(&*descriptor.read()) {
                             Ok(json) => {
@@ -113,7 +116,7 @@ fn app() -> Element {
                 }
             },
             div { class: "header_right",
-                button { class: "button",
+                button { class: "button button_header",
                     onclick: move |_| {
                         let cur_date = chrono::Local::now();
                         let file_name = cur_date.format("protoviz_%Y-%m-%d_%H-%M-%S.svg").to_string();
@@ -122,6 +125,15 @@ fn app() -> Element {
                         }
                     },
                     "Export SVG"
+                },
+                a { class: "icon_link",
+                    href: "https://github.com/danielstuart14/protoviz_web",
+                    target: "_blank",
+                    Icon {
+                        width: 30,
+                        height: 30,
+                        icon: FaGithub,
+                    }
                 }
             }
         }

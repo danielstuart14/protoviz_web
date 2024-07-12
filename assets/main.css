@@ -94,6 +94,26 @@ html,body, #st-full-pg {
   box-shadow: rgba(20, 52, 70, 0.2) 0 1px 0 inset;
 }
 
+.button_header {
+  min-width: 70px;
+}
+
+.icon_link {
+  color: white;
+}
+
+.icon_link:visited {
+  color: white;
+}
+
+.icon_link > * {
+  vertical-align: middle;
+}
+
+.icon_link:hover {
+  color: #b1b1b1;
+}
+
 .button_file {
   overflow: hidden;
   position: relative;
