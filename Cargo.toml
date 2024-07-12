@@ -1,19 +1,16 @@
 [package]
 name = "protoviz-web"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Daniel Stuart <daniel.stuart14@gmail.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-
 dioxus = { version = "0.5", features = ["web"] }
-
-# Debug
 dioxus-logger = "0.5.0"
 dioxus-free-icons = { version = "0.8.6", features = ["font-awesome-solid"] }
-protoviz = "0.4.2"
+protoviz = "0.5.0"
 hex_color = "3.0.0"
 js-sys = "0.3.69"
 web-sys = { version = "0.3.69", features = ["Blob", "BlobPropertyBag", "Url"] }

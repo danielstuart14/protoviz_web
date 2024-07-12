@@ -304,6 +304,21 @@ fn app() -> Element {
                                             *svg_data.write() = update_svg(&descriptor.read());
                                         }
                                     }
+                                },
+                                div { class: "row list_row",
+                                    label { r#for: "unit_width", "Unit Width ({descriptor.read().style.unit_width})" },
+                                    input {
+                                        r#type: "range",
+                                        name: "unit_width",
+                                        min: "30",
+                                        max: "80",
+                                        step: "5",
+                                        value: "{descriptor.read().style.unit_width}",
+                                        oninput: move |evt| {
+                                            descriptor.write().style.unit_width = evt.value().parse().unwrap();
+                                            *svg_data.write() = update_svg(&descriptor.read());
+                                        }
+                                    }
                                 }
                             }
                         },
