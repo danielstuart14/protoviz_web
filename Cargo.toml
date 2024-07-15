@@ -1,6 +1,6 @@
 [package]
 name = "protoviz-web"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Daniel Stuart <daniel.stuart14@gmail.com>"]
 edition = "2021"
 
@@ -21,3 +21,4 @@ chrono = "0.4.38"
 [profile.release]
 lto = true
 opt-level = 's'
+codegen-units = 1

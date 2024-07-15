@@ -27,7 +27,7 @@ html,body, #st-full-pg {
     background-color: #3C3C3C;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
 }
 
 .header_left {
