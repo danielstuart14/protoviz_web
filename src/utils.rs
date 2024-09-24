@@ -16,9 +16,12 @@ pub fn download_file(data: &[u8], filename: &str, file_type: &str) -> bool {
     let js_array = js_sys::Array::new();
     js_array.push(&js_byte_array.buffer());
 
+    let options = web_sys::BlobPropertyBag::new();
+    options.set_type(file_type);
+
     let blob = web_sys::Blob::new_with_u8_array_sequence_and_options(
         &js_array,
-        web_sys::BlobPropertyBag::new().type_(file_type),
+        &options,
     )
     .unwrap();
 
