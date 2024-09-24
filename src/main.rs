@@ -259,7 +259,7 @@ fn app() -> Element {
             }
             div { class: "column right_column",
                 div { class: "viewport",
-                    style: "background-color: #ffffff",
+                    style: format!("background-color: {}", Display::new(descriptor.read().style.background_color)),
                     dangerous_inner_html: svg_data.read().as_str(),
                 }
                 div {
