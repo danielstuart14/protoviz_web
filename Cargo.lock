@@ -1652,9 +1652,9 @@ dependencies = [
 
 [[package]]
 name = "protoviz"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "611536461f125889fc50ecf51286ce8ee6cbfe7bb55c8286eeb000b2c27dc8d5"
+checksum = "ee14699f623313a8f7fd6cc1c88404be5c398cb91a3ea1d40843ce194c8f1feb"
 dependencies = [
  "hex_color",
  "serde",
@@ -1664,7 +1664,7 @@ dependencies = [
 
 [[package]]
 name = "protoviz-web"
-version = "0.2.2"
+version = "0.2.3"
 dependencies = [
  "chrono",
  "dioxus",
