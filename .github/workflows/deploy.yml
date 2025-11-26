@@ -4,10 +4,37 @@ on:
   push:
     branches:
       - main
+permissions:
+  contents: write
 
 jobs:
-  build-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: "Dioxus Deploy"
-        uses: DioxusLabs/deploy-action@4f933485ec8f37a9dc1beec181f4eba58789523e
+      - name: Checkout 🛎️
+        uses: actions/checkout@v5
+
+      - name: Rust Setup 🦀
+        uses: actions-rs/toolchain@v1.0.6
+        with:
+          toolchain: stable
+          profile: minimal
+          target: wasm32-unknown-unknown
+          override: true
+
+      - name: Cache Dependencies 📦
+        uses: Swatinem/rust-cache@v2
+
+      - name: Install Dependencies 📦
+        shell: bash
+        run: cargo install dioxus-cli
+
+      - name: Build 🔧
+        shell: bash
+        run: dx bundle --release && cp ./docs/public/index.html ./docs/public/404.html
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: docs/public # The folder the action should deploy.

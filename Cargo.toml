@@ -1,24 +1,40 @@
 [package]
 name = "protoviz-web"
-version = "0.2.3"
+version = "0.3.0"
 authors = ["Daniel Stuart <daniel.stuart14@gmail.com>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-dioxus = { version = "0.5.6", features = ["web"] }
-dioxus-logger = "0.5.1"
-dioxus-free-icons = { version = "0.8.6", features = ["font-awesome-solid", "font-awesome-brands"] }
-protoviz = "0.5.3"
+dioxus = { version = "0.7.1", features = ["web"] }
+dioxus-logger = "0.7.1"
+dioxus-free-icons = { version = "0.10.0", features = ["font-awesome-solid", "font-awesome-brands"] }
+protoviz = "0.6.0"
 hex_color = "3.0.0"
-js-sys = "0.3.70"
-web-sys = { version = "0.3.70", features = ["Blob", "BlobPropertyBag", "Url"] }
-serde_json = "1.0.128"
+js-sys = "0.3.82"
+web-sys = { version = "0.3.82", features = ["Blob", "BlobPropertyBag", "Url", "CssStyleDeclaration", "HtmlIFrameElement", "HtmlImageElement", "HtmlCanvasElement", "CanvasRenderingContext2d"] }
+serde_json = "1.0.145"
 gloo-dialogs = "0.2.0"
-chrono = "0.4.38"
+chrono = "0.4.42"
+base64 = "0.22.1"
+wasm-bindgen = "0.2.105"
+wasm-bindgen-futures = "0.4.55"
 
 [profile.release]
+opt-level = "z"
+debug = false
 lto = true
-opt-level = 's'
 codegen-units = 1
+panic = "abort"
+incremental = false
+
+[profile.wasm-dev]
+inherits = "dev"
+opt-level = 1
+
+[profile.server-dev]
+inherits = "dev"
+
+[profile.android-dev]
+inherits = "dev"

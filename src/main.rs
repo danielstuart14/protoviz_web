@@ -12,7 +12,12 @@ use dioxus_logger::tracing::{error, Level};
 use hex_color::{Display, HexColor};
 use protoviz::descriptor::ProtoDescriptor;
 
-use utils::{create_field_descriptors, download_file, update_field_inputs, update_svg, FieldInput};
+use utils::{
+    create_field_descriptors, download_file, svg_to_png_bytes, update_field_inputs, update_svg,
+    FieldInput,
+};
+
+const SVG2PNG_FACTOR: f64 = 4.0;
 
 fn main() {
     // Init logger
@@ -45,15 +50,15 @@ fn app() -> Element {
         ]
     });
 
-    let mut file_opened = use_signal(|| String::new());
-    let mut descriptor = use_signal(|| ProtoDescriptor::default());
+    let mut file_opened = use_signal(String::new);
+    let mut descriptor = use_signal(ProtoDescriptor::default);
     let mut svg_data = use_signal(|| {
         descriptor.write().fields = create_field_descriptors(&input_fields.read());
         update_svg(&descriptor.read())
     });
 
     rsx! {
-        link { rel: "stylesheet", href: "main.css" }
+        Stylesheet { href: asset!("assets/main.css") },
         div { class: "header",
             h1 { class: "title",
                 "ProtoViz"
@@ -71,25 +76,20 @@ fn app() -> Element {
                     onchange: move |evt| {
                         *file_opened.write() = evt.value();
                         async move {
-                            if let Some(files) = evt.files() {
-                                match files.files().iter().next() {
-                                    Some(file_name) => {
-                                        if let Some(file) = files.read_file_to_string(file_name).await {
-                                            let new_descriptor: ProtoDescriptor = match serde_json::from_str(&file) {
-                                                Ok(descriptor) => descriptor,
-                                                Err(e) => {
-                                                    error!("Failed to parse file: {}", e);
-                                                    gloo_dialogs::alert("Failed to parse file");
-                                                    return;
-                                                }
-                                            };
-
-                                            *descriptor.write() = new_descriptor;
-                                            *input_fields.write() = update_field_inputs(&descriptor.read().fields);
-                                            *svg_data.write() = update_svg(&descriptor.read());
+                            if let Some(file) = evt.files().first() {
+                                if let Ok(data) = file.read_string().await {
+                                    let new_descriptor: ProtoDescriptor = match serde_json::from_str(&data) {
+                                        Ok(descriptor) => descriptor,
+                                        Err(e) => {
+                                            error!("Failed to parse file: {}", e);
+                                            gloo_dialogs::alert("Failed to parse file");
+                                            return;
                                         }
-                                    },
-                                    None => {}
+                                    };
+
+                                    *descriptor.write() = new_descriptor;
+                                    *input_fields.write() = update_field_inputs(&descriptor.read().fields);
+                                    *svg_data.write() = update_svg(&descriptor.read());
                                 }
                             }
                             *file_opened.write() = String::new();
@@ -118,13 +118,36 @@ fn app() -> Element {
             div { class: "header_right",
                 button { class: "button button_header",
                     onclick: move |_| {
-                        let cur_date = chrono::Local::now();
-                        let file_name = cur_date.format("protoviz_%Y-%m-%d_%H-%M-%S.svg").to_string();
-                        if !download_file(svg_data.read().as_bytes(), &file_name, "image/svg+xml") {
-                            gloo_dialogs::alert("Failed to download file");
+                        if let Some(prtvz) = svg_data.read().as_ref() {
+                            let cur_date = chrono::Local::now();
+                            let file_name = cur_date.format("protoviz_%Y-%m-%d_%H-%M-%S.svg").to_string();
+                            if !download_file(prtvz.svg.as_bytes(), &file_name, "image/svg+xml") {
+                                gloo_dialogs::alert("Failed to download SVG");
+                            }
                         }
                     },
                     "Export SVG"
+                },
+                button { class: "button button_header",
+                    onclick: move |_| {
+                        async move {
+                            if let Some(prtvz) = svg_data.read().as_ref() {
+                                match svg_to_png_bytes(&prtvz.svg, prtvz.width * SVG2PNG_FACTOR, prtvz.height * SVG2PNG_FACTOR).await {
+                                    Some(png_bytes) => {
+                                        let cur_date = chrono::Local::now();
+                                        let file_name = cur_date.format("protoviz_%Y-%m-%d_%H-%M-%S.png").to_string();
+                                        if !download_file(&png_bytes, &file_name, "image/png") {
+                                            gloo_dialogs::alert("Failed to download PNG");
+                                        }
+                                    },
+                                    None => {
+                                        gloo_dialogs::alert("Failed to convert to PNG");
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "Export PNG"
                 },
                 a { class: "icon_link",
                     href: "https://github.com/danielstuart14/protoviz_web",
@@ -208,11 +231,7 @@ fn app() -> Element {
                                 checked: field.wrap,
                                 name: "wrap",
                                 oninput: move |evt| {
-                                    if evt.checked() {
-                                        input_fields.write()[i].wrap = true;
-                                    } else {
-                                        input_fields.write()[i].wrap = false;
-                                    }
+                                    input_fields.write()[i].wrap = evt.checked();
                                     descriptor.write().fields = create_field_descriptors(&input_fields.read());
                                     *svg_data.write() = update_svg(&descriptor.read());
                                 }
@@ -223,7 +242,7 @@ fn app() -> Element {
                                 name: "color",
                                 oninput: move |evt| {
                                     if evt.checked() {
-                                        input_fields.write()[i].color = Some(descriptor.read().style.field_color.clone());
+                                        input_fields.write()[i].color = Some(descriptor.read().style.field_color);
                                     } else {
                                         input_fields.write()[i].color = None;
                                     }
@@ -234,7 +253,7 @@ fn app() -> Element {
                             input {
                                 r#type: "color",
                                 disabled: field.color.is_none(),
-                                value: format!("{}", Display::new(field.color.unwrap_or(descriptor.read().style.field_color.clone()))),
+                                value: format!("{}", Display::new(field.color.unwrap_or(descriptor.read().style.field_color))),
                                 onchange: move |evt| {
                                     input_fields.write()[i].color = Some(HexColor::parse_rgb(&evt.value()).unwrap());
                                     descriptor.write().fields = create_field_descriptors(&input_fields.read());
@@ -260,7 +279,7 @@ fn app() -> Element {
             div { class: "column right_column",
                 div { class: "viewport",
                     style: format!("background-color: {}", Display::new(descriptor.read().style.background_color)),
-                    dangerous_inner_html: svg_data.read().as_str(),
+                    dangerous_inner_html: svg_data.read().as_ref().map(|prtvz| prtvz.svg.as_str()).unwrap_or_default()
                 }
                 div {
                     div { class: "row flex_separator",
@@ -345,7 +364,7 @@ fn app() -> Element {
                                         value: "{descriptor.read().style.dyn_units}",
                                         oninput: move |evt| {
                                             descriptor.write().style.dyn_units = evt.value().parse().unwrap();
-                                            
+
                                         },
                                         onchange: move |_| {
                                             *svg_data.write() = update_svg(&descriptor.read());

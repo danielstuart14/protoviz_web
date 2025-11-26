@@ -6,14 +6,16 @@ body {
     background-color: #111216;
 }
 
-html,body, #st-full-pg {
+html,
+body,
+#st-full-pg {
     height: 100%;
     margin: 0;
- }
+}
 
 #main {
     margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     color: white;
     height: 100%;
     width: 100%;
@@ -24,7 +26,7 @@ html,body, #st-full-pg {
 .header {
     height: 70px;
     padding: 0 12px;
-    background-color: #3C3C3C;
+    background-color: #3c3c3c;
     display: flex;
     align-items: center;
     gap: 20px;
@@ -37,6 +39,10 @@ html,body, #st-full-pg {
     margin-left: 20px;
 }
 
+.header_left > .button_header {
+    min-width: 80px;
+}
+
 .header_right {
     display: flex;
     align-items: center;
@@ -44,80 +50,82 @@ html,body, #st-full-pg {
     margin-left: auto;
 }
 
+.header_right > .button_header {
+    min-width: 120px;
+}
+
 .button {
-  appearance: none;
-  background-color: #2e75a4;
-  border: 1px solid rgba(27, 31, 35, .15);
-  border-radius: 6px;
-  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  padding: 6px 16px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
+    appearance: none;
+    background-color: #2e75a4;
+    border: 1px solid rgba(27, 31, 35, 0.15);
+    border-radius: 6px;
+    box-shadow: rgba(27, 31, 35, 0.1) 0 1px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-block;
+    font-family:
+        -apple-system, system-ui, "Segoe UI", Helvetica, Arial, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji";
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 6px 16px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: middle;
+    white-space: nowrap;
 }
 
 .button:focus:not(:focus-visible):not(.focus-visible) {
-  box-shadow: none;
-  outline: none;
+    box-shadow: none;
+    outline: none;
 }
 
 .button:hover {
-  background-color: #275d81;
+    background-color: #275d81;
 }
 
 .button:focus {
-  box-shadow: rgba(46, 117, 164, 0.4) 0 0 0 3px;
-  outline: none;
+    box-shadow: rgba(46, 117, 164, 0.4) 0 0 0 3px;
+    outline: none;
 }
 
 .button:disabled {
-  background-color: #757575;
-  border-color: rgba(27, 31, 35, .1);
-  color: rgba(255, 255, 255, .8);
-  cursor: default;
+    background-color: #757575;
+    border-color: rgba(27, 31, 35, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    cursor: default;
 }
 
 .button:active:enabled {
-  background-color: #1f4c66;
-  box-shadow: rgba(20, 52, 70, 0.2) 0 1px 0 inset;
-}
-
-.button_header {
-  min-width: 70px;
+    background-color: #1f4c66;
+    box-shadow: rgba(20, 52, 70, 0.2) 0 1px 0 inset;
 }
 
 .icon_link {
-  color: white;
+    color: white;
 }
 
 .icon_link:visited {
-  color: white;
+    color: white;
 }
 
 .icon_link > * {
-  vertical-align: middle;
+    vertical-align: middle;
 }
 
 .icon_link:hover {
-  color: #b1b1b1;
+    color: #b1b1b1;
 }
 
 .button_file {
-  overflow: hidden;
-  position: relative;
+    overflow: hidden;
+    position: relative;
 }
 
 .circle_button {
@@ -127,15 +135,14 @@ html,body, #st-full-pg {
 }
 
 .arrow_button {
-  border-radius: 0;
-  padding: 1px 6px;
-  line-height: 0px;
+    border-radius: 0;
+    padding: 1px 6px;
+    line-height: 0px;
 }
 
 .arrow_column {
-  gap: 1px;
+    gap: 1px;
 }
-
 
 .title {
     line-height: 100%;
@@ -147,9 +154,9 @@ html,body, #st-full-pg {
 }
 
 .flex_separator:before {
-  content: "";
-  border: 1px solid #3C3C3C;
-  align-self: stretch;
+    content: "";
+    border: 1px solid #3c3c3c;
+    align-self: stretch;
 }
 
 .column {
@@ -158,11 +165,11 @@ html,body, #st-full-pg {
 }
 
 .left_column {
-  flex: 40%;
-  flex-shrink: 0;
+    flex: 40%;
+    flex-shrink: 0;
 }
 .right_column {
-  flex: 60%;
+    flex: 60%;
 }
 
 .viewport {
@@ -179,32 +186,32 @@ html,body, #st-full-pg {
 }
 
 .flex_separator .flex_item:first-child {
-  order: -1;
+    order: -1;
 }
 
 .column .flex_item:first-child {
-  order: -1;
+    order: -1;
 }
 
 .list_row {
-  height: 40px;
-  gap: 10px;
+    height: 40px;
+    gap: 10px;
 }
 
 .list_row_slim {
-  min-height: 35px;
-  height: auto;
+    min-height: 35px;
+    height: auto;
 }
 
 .list_row > * {
-  margin: auto 0;
+    margin: auto 0;
 }
 
 .text_entry {
-  padding: 5px;
-  width: 0;
-  min-width: 40px;
-  flex: 1;
+    padding: 5px;
+    width: 0;
+    min-width: 40px;
+    flex: 1;
 }
 
 .tab {
@@ -223,27 +230,27 @@ html,body, #st-full-pg {
 }
 
 .options_column {
-  flex: 50%;
+    flex: 50%;
 }
 
 .options {
-  padding: 10px;
-  flex: 1;
+    padding: 10px;
+    flex: 1;
 }
 
 .options > * {
-  justify-content: space-between;
+    justify-content: space-between;
 }
 
-input[type=color] {
-  min-width: 50px;
-  width: 50px;
+input[type="color"] {
+    min-width: 50px;
+    width: 50px;
 }
 
-input[type=file] {
-  display: none;
+input[type="file"] {
+    display: none;
 }
 
-input[type=range] {
-  width: 50%
+input[type="range"] {
+    width: 50%;
 }
